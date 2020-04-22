@@ -25,7 +25,7 @@ client.on('message', message => {
     const command = client.commands.get(commandName)
 
     try {
-      command.execute(message.args)
+      command.execute(message,args)
     } catch (error) {
       console.error(error)
       message.reply('An error occured whilst trying to execute that command.')
