@@ -26,6 +26,10 @@ client.on('message', message => {
 
     const command = client.commands.get(commandName)
 
+    if (command.permissions) {
+      if (!message.member.hasPermission(command.permissions)) return message.reply('you don\'t have enough permissions to run this command.')
+    }
+
     if (command.cooldown) {
       if (!cooldowns.has(command.name)) {
         cooldowns.set(command.name, new Discord.Collection())
