@@ -1,5 +1,8 @@
 module.exports = {
   name: 'kick',
+  usage: 'kick [mention]',
+  argsreq: true,
+  mentionreq: true,
   permissions: ['KICK_MEMBERS'],
   async execute(message, args) {
     const target = await message.guild.members.fetch(message.mentions.users.first().id)

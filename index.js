@@ -30,6 +30,15 @@ client.on('message', message => {
       if (!message.member.hasPermission(command.permissions)) return message.reply('you don\'t have enough permissions to run this command.')
     }
 
+    if (command.argsreq && !args.length) {
+      let response = 'you need to pass more arguments into this command.'
+      if (command.usage) response += `\n\`\`\`${command.usage}\`\`\``
+
+      return message.reply(response)
+    }
+
+    if (command.mentionreq && !message.mentions.users.size) return message.reply('you need to mention at least one user.')
+
     if (command.cooldown) {
       if (!cooldowns.has(command.name)) {
         cooldowns.set(command.name, new Discord.Collection())
