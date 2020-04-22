@@ -5,6 +5,8 @@ const { prefix, token } = require('./config.json')
 const client = new Discord.Client()
 client.commands = new Discord.Collection()
 
+const cooldowns = new Discord.Collection()
+
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
 
 for (const file of commandFiles) {
@@ -24,11 +26,33 @@ client.on('message', message => {
 
     const command = client.commands.get(commandName)
 
+    if (command.cooldown) {
+      if (!cooldowns.has(command.name)) {
+        cooldowns.set(command.name, new Discord.Collection())
+      }
+
+      const now = Date.now()
+      const timestamps = cooldowns.get(command.name)
+      const cooldownAmount = command.cooldown * 1000
+
+      if (timestamps.has(message.author.id)) {
+        const expirationTime = timestamps.get(message.author.id) + cooldownAmount
+
+        if (now < expirationTime) {
+          const timeLeft = (expirationTime - now) / 1000
+          return message.reply(`please wait ${timeLeft.toFixed(1)} second(s) before using \`${prefix}${command.name}\` again.`)
+        }
+      }
+
+      timestamps.set(message.author.id, now)
+      setTimeout(_ => timestamps.delete(message.author.id), cooldownAmount)
+    }
+
     try {
-      command.execute(message,args)
+      command.execute(message, args)
     } catch (error) {
       console.error(error)
-      message.reply('An error occured whilst trying to execute that command.')
+      message.reply(`an error occured whilst trying to execute \`${prefix}${command.name}\`.`)
     }
   }
 })
