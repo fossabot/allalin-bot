@@ -4,19 +4,30 @@ const { prefix, token } = require('./config.json')
 
 const client = new Discord.Client()
 client.commands = new Discord.Collection()
-
-const cooldowns = new Discord.Collection()
+const msgchecks = []
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
+const msgcheckFiles = fs.readdirSync('./checks/messages').filter(file => file.endsWith('.js'))
 
 for (const file of commandFiles) {
   const command = require(`./commands/${file}`)
   client.commands.set(command.name, command)
 }
 
+for (const file of msgcheckFiles) {
+  const check = require(`./checks/messages/${file}`)
+  msgchecks.push(check)
+}
+
+const cooldowns = new Discord.Collection()
+
 client.once('ready', _ => console.log('Ready!'))
 
 client.on('message', message => {
+  msgchecks.forEach(check => {
+    check.execute(message)
+  })
+
   if (message.author.bot || message.channel.type !== 'text') return
   if (message.content.startsWith(prefix)) {
     const args = message.content.slice(prefix.length).split(/ +/)
