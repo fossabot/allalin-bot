@@ -1,5 +1,6 @@
 module.exports = {
   name: 'kick',
+  description: 'Kick a member from the guild.',
   usage: 'kick [mention]',
   argsreq: true,
   mentionreq: true,
