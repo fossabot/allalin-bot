@@ -5,9 +5,11 @@ const { prefix, token } = require('./config.json')
 const client = new Discord.Client()
 client.commands = new Discord.Collection()
 const msgConditionals = []
+const handlers = []
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
 const msgConditionalFiles = fs.readdirSync('./conditionals/messages').filter(file => file.endsWith('.js'))
+const handlerFiles = fs.readdirSync('./handlers').filter(file => file.endsWith('.js'))
 
 for (const file of commandFiles) {
   const command = require(`./commands/${file}`)
@@ -19,9 +21,16 @@ for (const file of msgConditionalFiles) {
   msgConditionals.push(conditional)
 }
 
+for (const file of handlerFiles) {
+  const conditional = require(`./handlers/${file}`)
+  handlers.push(conditional)
+}
+
 const cooldowns = new Discord.Collection()
 
-client.once('ready', _ => console.log('Ready!'))
+for (const handler of handlers) {
+  client.on(handler.event, handler.handle)
+}
 
 client.on('message', message => {
   msgConditionals.forEach(conditional => {
