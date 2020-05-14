@@ -1,6 +1,6 @@
 module.exports = {
   event: 'ready',
   handle () {
-    console.log(`Ready`)
+    console.log(`Ready!`)
   }
 }
