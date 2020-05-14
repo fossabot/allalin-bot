@@ -1,5 +1,21 @@
 module.exports = {
   event: 'message',
+  initialise (client) {
+    const fs = require('fs')
+    const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
+
+    for (const file of commandFiles) {
+      const command = require(`../commands/${file}`)
+      client.commands.set(command.name, command)
+    }
+
+    const msgConditionalFiles = fs.readdirSync('./conditionals/messages').filter(file => file.endsWith('.js'))
+
+    for (const file of msgConditionalFiles) {
+      const conditional = require(`../conditionals/messages/${file}`)
+      client.msgConditionals.push(conditional)
+    }
+  },
   handle (message) {
     const Discord = require('discord.js')
     message.client.msgConditionals.forEach(conditional => {
