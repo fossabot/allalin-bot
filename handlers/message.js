@@ -1,35 +1,35 @@
 module.exports = {
   event: 'message',
-  initialise (client) {
+  initialise () {
     const fs = require('fs')
     const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
 
     for (const file of commandFiles) {
       const command = require(`../commands/${file}`)
-      client.commands.set(command.name, command)
+      global.commands.set(command.name, command)
     }
 
     const msgConditionalFiles = fs.readdirSync('./conditionals/messages').filter(file => file.endsWith('.js'))
 
     for (const file of msgConditionalFiles) {
       const conditional = require(`../conditionals/messages/${file}`)
-      client.msgConditionals.push(conditional)
+      global.msgConditionals.push(conditional)
     }
   },
   handle (message) {
     const Discord = require('discord.js')
-    message.client.msgConditionals.forEach(conditional => {
+    global.msgConditionals.forEach(conditional => {
       conditional.execute(message)
     })
 
     if (message.author.bot || message.channel.type !== 'text') return
-    if (message.content.startsWith(message.client.prefix)) {
-      const args = message.content.slice(message.client.prefix.length).split(/ +/)
+    if (message.content.startsWith(global.config.prefix)) {
+      const args = message.content.slice(global.config.prefix.length).split(/ +/)
       const commandName = args.shift().toLowerCase()
 
-      if (!message.client.commands.has(commandName)) return
+      if (!global.commands.has(commandName)) return
 
-      const command = message.client.commands.get(commandName)
+      const command = global.commands.get(commandName)
 
       if (command.permissions) {
         if (!message.member.hasPermission(command.permissions)) return message.reply('you don\'t have enough permissions to run this command.')
@@ -45,12 +45,12 @@ module.exports = {
       if (command.mentionreq && !message.mentions.users.size) return message.reply('you need to mention at least one user.')
 
       if (command.cooldown) {
-        if (!message.client.cooldowns.has(command.name)) {
-          message.client.cooldowns.set(command.name, new Discord.Collection())
+        if (!global.cooldowns.has(command.name)) {
+          global.cooldowns.set(command.name, new Discord.Collection())
         }
 
         const now = Date.now()
-        const timestamps = message.client.cooldowns.get(command.name)
+        const timestamps = global.cooldowns.get(command.name)
         const cooldownAmount = command.cooldown * 1000
 
         if (timestamps.has(message.author.id)) {
