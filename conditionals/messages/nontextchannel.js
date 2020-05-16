@@ -3,6 +3,6 @@ module.exports = {
     return message.channel.type !== 'text'
   },
   execute (message) {
-    return 1
+    return true
   }
 }

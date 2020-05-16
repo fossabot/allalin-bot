@@ -3,6 +3,6 @@ module.exports = {
     return message.author.bot
   },
   execute (message) {
-    return 1
+    return true
   }
 }
