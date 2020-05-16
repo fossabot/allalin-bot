@@ -2,6 +2,12 @@ module.exports = {
   event: 'message',
   initialise () {
     const fs = require('fs')
+    const Discord = require('Discord.js')
+
+    global.commands = new Discord.Collection()
+    global.cooldowns = new Discord.Collection()
+    global.msgConditionals = []
+
     const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
 
     for (const file of commandFiles) {
@@ -19,10 +25,13 @@ module.exports = {
   handle (message) {
     const Discord = require('discord.js')
     global.msgConditionals.forEach(conditional => {
-      conditional.execute(message)
+      if (conditional.evaluate(message)) {
+        conditional.execute(message)
+      }
     })
 
     if (message.author.bot || message.channel.type !== 'text') return
+
     if (message.content.startsWith(global.config.prefix)) {
       const args = message.content.slice(global.config.prefix.length).split(/ +/)
       const commandName = args.shift().toLowerCase()
@@ -70,7 +79,7 @@ module.exports = {
         command.execute(message, args)
       } catch (error) {
         console.error(error)
-        message.reply(`an error occured whilst trying to execute \`${prefix}${command.name}\`.`)
+        message.reply(`an error occured whilst trying to execute \`${global.config.prefix}${command.name}\`.`)
       }
     }
   }

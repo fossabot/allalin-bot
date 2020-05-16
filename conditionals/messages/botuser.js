@@ -1,8 +1,8 @@
 module.exports = {
   evaluate (message) {
-    return message.mentions.users.size > 4
+    return message.author.bot
   },
   execute (message) {
-    message.member.ban()
+    return 1
   }
 }

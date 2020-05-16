@@ -5,7 +5,7 @@ module.exports = {
   execute (message) {
     let response = ''
 
-    message.client.commands.forEach((value) => {
+    global.commands.forEach((value) => {
       response += `${value.name}: ${value.description}\n`
       if (value.usage) response += `\`\`\`${value.usage}\`\`\``
     })

@@ -4,9 +4,6 @@ global.config = require('./config.json')
 
 const client = new Discord.Client()
 
-global.commands = new Discord.Collection()
-global.cooldowns = new Discord.Collection()
-global.msgConditionals = []
 global.handlers = []
 
 const handlerFiles = fs.readdirSync('./handlers').filter(file => file.endsWith('.js'))
