@@ -1,5 +1,5 @@
 {
-  "license": "Unlicense",
+  "license": "MIT",
   "repository": "github:deekts/allalin-bot",
   "dependencies": {
     "discord.js": "^12.2.0"
